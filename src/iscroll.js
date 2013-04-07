@@ -89,7 +89,6 @@ var m = Math,
 			i;
 
 		that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
-		that.wrapper.style.overflow = options.useNativeScroll ? 'auto' : 'hidden';
 		that.scroller = that.wrapper.children[0];
 
 		// Default options
@@ -152,10 +151,11 @@ var m = Math,
 
 		// Normalize options
 		that.options.useTransform = hasTransform && that.options.useTransform && !that.options.useNativeScroll;
-		that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar && !that.options.useNativeScroll;
-		that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar && !that.options.useNativeScroll;
+		that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar;
+		that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar;
 		that.options.zoom = that.options.useTransform && that.options.zoom;
 		that.options.useTransition = hasTransitionEnd && that.options.useTransition && !that.options.useNativeScroll;
+		that.options.bounce = that.options.bounce && !that.options.useNativeScroll;
 
 		// Helpers FIX ANDROID BUG!
 		// translate3d and scale doesn't work together!
@@ -164,7 +164,19 @@ var m = Math,
 			translateZ = '';
 		}
 
+		// If scrollbars are requested, we're using native scrolling, and this is a desktop browser,
+		// use overflow: auto. This will display native scrollbars, so disable iScroll bars.
+		// (Mobile webkit will still need iScroll's bars.)
+		if(that.options.useNativeScroll && !isIDevice && !isAndroid && (that.options.hScrollbar || that.options.vScrollbar)) {
+			that.wrapper.style.overflow = 'auto';
+				that.options.hScrollbar = false;
+				that.options.vScrollbar = false;
+		} else {
+			that.wrapper.style.overflow = 'hidden';
+		}
+
 		// Set some default styles
+		if (options.useNativeScroll && (isIDevice || isAndroid)) that.wrapper.style.webkitOverflowScrolling = 'touch';
 		if(!that.options.useNativeScroll) that.scroller.style[transitionProperty] = that.options.useTransform ? cssVendor + 'transform' : 'top left';
 		that.scroller.style[transitionDuration] = '0';
 		that.scroller.style[transformOrigin] = '0 0';
@@ -246,7 +258,7 @@ iScroll.prototype = {
 			bar = doc.createElement('div');
 
 			if (that.options.scrollbarClass) bar.className = that.options.scrollbarClass + dir.toUpperCase();
-			else bar.style.cssText = 'position:absolute;z-index:100;' + (dir == 'h' ? 'height:7px;bottom:1px;left:2px;right:' + (that.vScrollbar ? '7' : '2') + 'px' : 'width:7px;bottom:' + (that.hScrollbar ? '7' : '2') + 'px;top:2px;right:1px');
+			else bar.style.cssText = 'position:absolute;z-index:100000001;' + (dir == 'h' ? 'height:7px;bottom:1px;left:2px;right:' + (that.vScrollbar ? '7' : '2') + 'px' : 'width:7px;bottom:' + (that.hScrollbar ? '7' : '2') + 'px;top:2px;right:1px');
 
 			bar.style.cssText += ';pointer-events:none;' + cssVendor + 'transition-property:opacity;' + cssVendor + 'transition-duration:' + (that.options.fadeScrollbar ? '350ms' : '0') + ';overflow:hidden;opacity:' + (that.options.hideScrollbar ? '0' : '1');
 
@@ -256,7 +268,7 @@ iScroll.prototype = {
 			// Create the scrollbar indicator
 			bar = doc.createElement('div');
 			if (!that.options.scrollbarClass) {
-				bar.style.cssText = 'position:absolute;z-index:100;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);' + cssVendor + 'background-clip:padding-box;' + cssVendor + 'box-sizing:border-box;' + (dir == 'h' ? 'height:100%' : 'width:100%') + ';' + cssVendor + 'border-radius:3px;border-radius:3px';
+				bar.style.cssText = 'position:absolute;z-index:100000001;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);' + cssVendor + 'background-clip:padding-box;' + cssVendor + 'box-sizing:border-box;' + (dir == 'h' ? 'height:100%' : 'width:100%') + ';' + cssVendor + 'border-radius:3px;border-radius:3px';
 			}
 			bar.style.cssText += ';pointer-events:none;' + cssVendor + 'transition-property:' + cssVendor + 'transform;' + cssVendor + 'transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);' + cssVendor + 'transition-duration:0;' + cssVendor + 'transform: translate(0,0)' + translateZ;
 			if (that.options.useTransition) bar.style.cssText += ';' + cssVendor + 'transition-timing-function:cubic-bezier(0.33,0.66,0.66,1)';
@@ -341,6 +353,11 @@ iScroll.prototype = {
 			} else {
 				pos = that[dir + 'ScrollbarMaxScroll'];
 			}
+		}
+
+
+		if(that.options.useNativeScroll) {
+			that[dir + 'ScrollbarWrapper'].style[transform] = 'translate(' + (dir == 'h' ? -that.x + 'px,0)' : '0,' + -that.y + 'px)') + translateZ;
 		}
 
 		that[dir + 'ScrollbarWrapper'].style[transitionDelay] = '0';

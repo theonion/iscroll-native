@@ -25,13 +25,19 @@ This gets you a scrolling element that:
 
 * Works on desktop and mobile browsers.
 
-* Preserves native scrollbars -- no need to fake it.
+* Preserves native scrollbars in desktop browsers -- no need to fake it.
 
 * Is compatible with other scrolling libraries and event handlers.
 
 * Is compatible with native scrolling, e.g. if a desktop user actually clicks a native scrollbar button.
 
 * As a bonus for desktop browsers, also prevents [fixed position elements swallowing mousewheel events](http://stackoverflow.com/questions/7182502/pass-mousewheel-event-through-fixed-content).
+
+
+Limitations
+===============
+
+As scrollTop and scrollLeft cannot be set to negative values, enabling native scrolling automatically disables the "bounce" effect when reaching the end of scrolled content.
 
 
 Disclaimer of hackiness
