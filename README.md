@@ -1,36 +1,69 @@
-iScroll v4.2.5 - 2012-10-26
-===========================
+iScroll-native
+===============
 
-The overflow:scroll for mobile webkit. Project started because webkit for iPhone does not provide a native way to scroll content inside a fixed size (width/height) div. So basically it was impossible to have a fixed header/footer and a scrolling central area. Until now. Read more at [cubiq.org](http://cubiq.org).
+This is a fork of the excellent [iScroll](http://cubiq.org/iscroll-4) library for a very specific use case.
 
-## Ender support
-Using [Ender](http://ender.no.de), add it to your existing build
+As of iOS 5, Mobile Safari finally supports native scrolling inside elements with ```overflow: auto```. Thus iScroll is no longer necessary just to get scrolling divs in iDevices.
 
-    $ ender add iscroll
+However, Mobile Safari's native inertial scrolling pauses all DOM updates and fires no JS events *during* scrolling. This is problematic for advanced scrolling effects like sticky elements that anchor to the viewport when scrolled past. With native scrolling, the page contents will freeze until scrolling comes to a complete stop, and only then will any DOM changes jump into place.
 
-Use it like this:
+iScroll solves this nicely. By replacing native scrolling, you can fire events continuously while the user's finger is in motion. But it does this by manipulating the top/left or transform properties. This leaves tworemaining problems for advanced effects:
 
-``` js
-var myScroll = $('#doc').iScroll(options)
+1. It's incompatible with other scroll-based libraries, e.g. [jQuery Waypoints](http://imakewebthings.com/jquery-waypoints/).
+
+2. The default transform-based scrolling [breaks position:fixed elements](http://meyerweb.com/eric/thoughts/2011/09/12/un-fixing-fixed-elements-with-css-transforms/). (Using the fallback top/left scrolling solves this, but at the cost of smooth scrolling on older iDevices.)
+
+iScroll-native fixes this by adding a ```useNativeScroll``` option. When this is set to true, the ```scrollTop``` and ```scrollLeft``` properties of the wrapper element will be used instead of css transforms or top/left properties on the scrolling content, and the wrapper will be set to ```overflow: auto``` instead of ```overflow: hidden```. Example usage:
+
+```
+var myScroll = new iScroll('wrapper_id', {
+	useNativeScroll: true
+});
 ```
 
-## Credits and Special thanks
-iScroll is evolving thank to the help of all those who sent suggestions, bug reports and ideas on [github](https://github.com/cubiq/iscroll), my [blog](http://cubiq.org) and [googlecode](http://code.google.com/p/iscroll-js/). This is by no means the work of a sole man.
+This gets you a scrolling element that:
 
-In completely random order:
+* Works on desktop and mobile browsers.
 
-- All Github [contributors](https://github.com/cubiq/iscroll/contributors)
-- [beedesk](http://beedesk.com) for bug squashing in the pull to refresh feature
-- [Daniel J. Pinter](http://twitter.com/#!/HeadDZombie) for continued support, bug reports and for killing zombies
-- [Aseem Kishore](http://about.me/aseemk) for help with the zoom functionality
-- [Alex Gibson](http://miniapps.co.uk/) for continued support and bug reports
-- [Christoph Pojer](http://cpojer.net) for ideas, suggestions and bug reports
-- [Shimon Dookdin](https://github.com/shimondoodkin) for help with wheel support
-- [Will Bailey](http://blog.thirtymontgomery.com/) for commonJS compatibility
-- [Aaron Reisman](https://github.com/lifeiscontent) for bug reports and continued support
-- [David Haslem](https://github.com/therabidbanana) for suggestions and bug reports
-- [gingertom](https://github.com/gingertom) for suggestions and bug reports
-- [David Alan Hjelle](https://github.com/dahjelle) for bug squashing
-- [iangilman](https://github.com/iangilman) for help with the zoom functionality
-- All those who supported, linked, loved the iScroll
-- I'm sure I'm missing someone, sorry about that. If you helped in the script development and you don't see your name here, please drop me a line
+* Preserves native scrollbars -- no need to fake it.
+
+* Is compatible with other scrolling libraries and event handlers.
+
+* Is compatible with native scrolling, e.g. if a desktop user actually clicks a native scrollbar button.
+
+* As a bonus for desktop browsers, also prevents [fixed position elements swallowing mousewheel events](http://stackoverflow.com/questions/7182502/pass-mousewheel-event-through-fixed-content).
+
+
+Disclaimer of hackiness
+===============
+
+I forked this specifically for my own project that needed sticky elements on vertical scrolling with iPad and desktop support. I haven't tested it for anything else. If you have other uses in mind, I strongly encourage you to check out the original [iScroll](http://cubiq.org/iscroll-4) first, and if that's not enough use iScroll-native as a guide for your own modifications. iScroll is a solid, tested, deployable solution to several problems. iScroll-native is a quick hack. :)
+
+
+License
+===============
+
+Copyright (c) 2012 Matteo Spinelli, http://cubiq.org/
+
+Modified from original source 2013 Nick B-W (@pseudomammal)
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
