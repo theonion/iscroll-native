@@ -7,7 +7,7 @@ As of iOS 5, Mobile Safari finally supports native scrolling inside elements wit
 
 However, Mobile Safari's native inertial scrolling pauses all DOM updates and fires no JS events *during* scrolling. This is problematic for advanced scrolling effects like sticky elements that anchor to the viewport when scrolled past. With native scrolling, the page contents will freeze until scrolling comes to a complete stop, and only then will any DOM changes jump into place.
 
-iScroll solves this nicely. By replacing native scrolling, you can fire events continuously while the user's finger is in motion. But it does this by manipulating the top/left or transform properties. This leaves tworemaining problems for advanced effects:
+iScroll solves this nicely. By replacing native scrolling, you can fire events continuously while the user's finger is in motion. But it does this by manipulating the top/left or transform properties. This leaves two remaining problems for advanced effects:
 
 1. It's incompatible with other scroll-based libraries, e.g. [jQuery Waypoints](http://imakewebthings.com/jquery-waypoints/).
 
