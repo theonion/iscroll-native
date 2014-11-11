@@ -1,0 +1,14 @@
+{
+  "name": "iscroll-native",
+  "version": "0.0.1",
+  "authors": [
+    "Andrew Kos <akos@theonion.com>"
+  ],
+  "description": "IScroll with support for native scroll events.",
+  "keywords": [
+    "IScroll",
+    "overflow",
+    "iOS"
+  ],
+  "license": "MIT"
+}
