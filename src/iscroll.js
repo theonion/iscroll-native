@@ -1145,7 +1145,7 @@ function prefixStyle (style) {
 
 dummyStyle = null;	// for the sake of it
 
-if (typeof exports !== 'undefined') exports.iScroll = IScroll;
+if (typeof exports !== 'undefined') exports.IScroll = IScroll;
 else window.IScroll = IScroll;
 
 })(window, document);
